@@ -22,6 +22,9 @@ FusionEKF::FusionEKF() {
   R_radar_ = MatrixXd(3, 3);
   H_laser_ = MatrixXd(2, 4);
   Hj_ = MatrixXd(3, 4);
+  P_ = MatrixXd(4, 4);
+  Q_ = MatrixXd(4, 4);
+  F_ = MatrixXd(4, 4);
 
   //measurement covariance matrix - laser
   R_laser_ << 0.0225, 0,
@@ -43,6 +46,14 @@ FusionEKF::FusionEKF() {
   Hj_ << 1, 1, 0, 0,
          1, 1, 0, 0,
          1, 1, 1, 1;
+
+  P_<< 1000, 0,    0,    0,
+       0,    1000, 0,    0,
+       0,    0,    1000, 0,
+       0,    0,    0,    1000;
+
+  noise_ax = 9;
+  noise_ay = 9;
 
 }
 
@@ -92,6 +103,9 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    * TODO: Update the process noise covariance matrix.
    * Use noise_ax = 9 and noise_ay = 9 for your Q matrix.
    */
+
+  MatrixXd F = MatrixXd(4, 4);
+
 
   ekf_.Predict();
 
