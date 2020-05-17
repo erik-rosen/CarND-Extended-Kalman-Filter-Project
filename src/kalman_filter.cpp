@@ -1,3 +1,4 @@
+#include <iostream>
 #include "kalman_filter.h"
 
 using Eigen::MatrixXd;
@@ -8,7 +9,15 @@ using Eigen::VectorXd;
  *   VectorXd or MatrixXd objects with zeros upon creation.
  */
 
-KalmanFilter::KalmanFilter() {}
+KalmanFilter::KalmanFilter() {
+    x_ = VectorXd(4);
+    P_ = MatrixXd(4, 4);
+    F_ = MatrixXd(4, 4);
+    H_ = MatrixXd();
+    R_ = MatrixXd();
+    Q_ = MatrixXd(4, 4);
+    F_ = MatrixXd(4, 4);
+}
 
 KalmanFilter::~KalmanFilter() {}
 
@@ -24,7 +33,7 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
 
 void KalmanFilter::Predict() {
   /**
-   * TODO: predict the state
+   * predict the state
    */
    x_ = F_ * x_;
    P_ = F_ * P_ * F_.transpose() + Q_;
@@ -32,7 +41,7 @@ void KalmanFilter::Predict() {
 
 void KalmanFilter::Update(const VectorXd &z) {
   /**
-   * TODO: update the state by using Kalman Filter equations
+   * update the state by using Kalman Filter equations
    */
    VectorXd y = z - H_ * x_;
    MatrixXd S = H_ * P_ * H_.transpose() + R_;
@@ -43,25 +52,31 @@ void KalmanFilter::Update(const VectorXd &z) {
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
   /**
-   * TODO: update the state by using Extended Kalman Filter equations
+   *update the state by using Extended Kalman Filter equations
    */
     float px = x_(0);
     float py = x_(1);
     float vx = x_(2);
     float vy = x_(3);
+    float atanxy;
     VectorXd h_x = VectorXd(3);
-    h_x << sqrt(px*px + py*py), atan(py/px), (px*vx + py*vx)/sqrt(px*px + py*py);
+
+    h_x << sqrt(px*px + py*py), atan2(py, px), (px*vx + py*vy)/sqrt(px*px + py*py);
     VectorXd y = z - h_x;
+    //std::cout << "h(x): " << h_x << std::endl;
+    //std::cout << "y: " << y << std::endl;
 
     //Normalize phi to be between pi and -pi
     while (y(1) > M_PI || y(1) < - M_PI ){
         if (y(1) > M_PI){
-            y(1) = y(1) - M_2_PI;
+            y(1) = y(1) - M_PI*2.0;
         }
         if (y(1) < -M_PI){
-            y(1) = y(1) + M_2_PI;
+            y(1) = y(1) + M_PI*2.0;
         }
     }
+
+    //std::cout << "Phi: " << y(1) << std::endl;
 
     MatrixXd S = H_ * P_ * H_.transpose() + R_;
     MatrixXd K = P_ * H_.transpose() * S.inverse();
