@@ -48,8 +48,8 @@ class FusionEKF {
   Eigen::MatrixXd P_;
   Eigen::MatrixXd F_;
   Eigen::MatrixXd Q_;
-  float noise_ax;
-  float noise_ay;
+  float noise_ax_;
+  float noise_ay_;
 };
 
 #endif // FusionEKF_H_
