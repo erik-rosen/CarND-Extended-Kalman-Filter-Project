@@ -9,6 +9,22 @@ In this project I built an extended Kalman filter to estimate the state of a mov
 
 I was successful in obtaining RMSE values that are lower than 0.1 along the cartesian axes position measurements, and less that 0.5 in velocity components along axes. 
 
+### Accuracy
+
+TODO
+
+### Algorithm implementation
+
+* Your Sensor Fusion algorithm follows the general processing flow as taught in the preceding lessons.
+* Your Kalman Filter algorithm handles the first measurements appropriately.
+* Your algorithm should use the first measurements to initialize the state vectors and covariance matrices.
+* Your Kalman Filter algorithm first predicts then updates.
+* Upon receiving a measurement after the first, the algorithm should predict object position to the current timestep and then update the prediction using the new measurement.
+* Your Kalman Filter can handle radar and lidar measurements.
+
+### Code Efficiency
+
+
 ## Running the simulator
 
 This project involves the Term 2 Simulator which can be downloaded [here](https://github.com/udacity/self-driving-car-sim/releases).
