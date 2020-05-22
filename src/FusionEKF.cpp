@@ -68,7 +68,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       // Convert radar from polar to cartesian coordinates
-      //         and initialize state.
+      // and initialize state.
       // Order is: ro,theta, ro_dot
       float ro = measurement_pack.raw_measurements_(0);
       float theta = measurement_pack.raw_measurements_(1);
@@ -79,16 +79,18 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       float vx = ro_dot * cos(theta);
       float vy = ro_dot * sin(theta);
       ekf_.x_ << px, py, vx, vy;
-      ekf_.P_ << 1, 0,    0,    0,
-              0,    1, 0,    0,
-              0,    0,    1, 0,
+      ekf_.P_ <<
+              1,    0,    0,    0,
+              0,    1,    0,    0,
+              0,    0,    1,    0,
               0,    0,    0,    1;
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
       // Initialize state.
       ekf_.x_ << measurement_pack.raw_measurements_(0), measurement_pack.raw_measurements_(1), 0, 0;
-      ekf_.P_ <<1, 0,    0,    0,
-              0,    1, 0,    0,
+      ekf_.P_ <<
+              1,    0,    0,    0,
+              0,    1,    0,    0,
               0,    0,    1000, 0,
               0,    0,    0,    1000;
     }
@@ -101,19 +103,17 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   }
 
   /**
-   * Prediction
-   */
-
-  /**
+   * Prediction:
    * Update the state transition matrix F according to the new elapsed time.
    * Time is measured in seconds.
    * Update the process noise covariance matrix.
-   * Use noise_ax_ = 9 and noise_ay_ = 9 for your Q matrix.
+   * Using noise_ax_ = 9 and noise_ay_ = 9 for your Q matrix.
    */
 
   double dt_s = double((measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0);
   previous_timestamp_ = measurement_pack.timestamp_;
 
+  //We reset if time goes backward (usually if the simulation is reset) or more than 10s has elapsed
   if (dt_s<0||dt_s>10){
       is_initialized_ = false;
       return;
@@ -124,21 +124,21 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
              0, 0, 1,    0,
              0, 0, 0,    1;
 
-  ekf_.Q_ << dt_s * dt_s * dt_s * dt_s * noise_ax_ / 4,    0, dt_s * dt_s * dt_s * noise_ax_ / 2, 0,
-        0, dt_s * dt_s * dt_s * dt_s * noise_ay_ / 4, 0, dt_s * dt_s * dt_s * noise_ay_ / 2,
-          dt_s * dt_s * dt_s * noise_ax_ / 2,         0, dt_s * dt_s * noise_ax_,          0,
-        0, dt_s * dt_s * dt_s * noise_ay_ / 2,      0, dt_s * dt_s * noise_ay_;
+  double dt_s2 = dt_s * dt_s;
+  double dt_s3 = dt_s2 * dt_s;
+  double dt_s4 = dt_s2 * dt_s2;
+
+  ekf_.Q_ <<
+          dt_s4 * noise_ax_ / 4,    0,                      dt_s3 * noise_ax_ / 2,  0,
+          0,                        dt_s4 * noise_ay_ / 4,  0,                      dt_s3 * noise_ay_ / 2,
+          dt_s3 * noise_ax_ / 2,    0,                      dt_s2 * noise_ax_,      0,
+          0,                        dt_s3 * noise_ay_ / 2,  0,                      dt_s2 * noise_ay_;
 
   ekf_.Predict();
 
 
-
   /**
-   * Update
-   */
-
-  /**
-   *
+   * Update:
    * - Use the sensor type to perform the update step.
    * - Update the state and covariance matrices.
    */
@@ -149,7 +149,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     try {
         Hj_ = tools.CalculateJacobian(ekf_.x_);
     } catch (...) {
-        cout << "Error computing Jacobian" << endl; //Using the prior jacobian
+        cout << "Error computing Jacobian" << endl; //Using the prior Jacobian in case of errors computing the above
     }
     ekf_.H_ = Hj_;
     ekf_.R_ = R_radar_;
