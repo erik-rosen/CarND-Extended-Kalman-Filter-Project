@@ -37,14 +37,20 @@ If the first measurement is a radar measurement, we need to convert from polar c
 
 Once the EKF has been initialized measurements received trigger the following loop: 
 
-##### Prediction:
-1. First we compute the time difference since the last measurement was received. This is used to compute the state transition matrix F, and the process covariance matrix Q.
-2. We apply the EKF prediction equations to update the state estimate and state covariance matrix:
+#### Prediction:
+First we compute the time difference since the last measurement was received. This is used to compute the state transition matrix F, and the process covariance matrix Q:
 
+![F](F.png "Computing state transition matrix F")
 
+![Q](Q.png "Computing process covariance matrix Q")
+
+Where sigma_ay^2 and sigma_ax^2 is the variance of the acceleration, modelled as gaussian noise with zero mean.
+
+We then apply the prediction equations to update the state estimate and state covariance matrix:
+
+![predict](predict.png "Prediction equation")
 
 * Your Sensor Fusion algorithm follows the general processing flow as taught in the preceding lessons.
-* Your Kalman Filter algorithm handles the first measurements appropriately.
 * Your algorithm should use the first measurements to initialize the state vectors and covariance matrices.
 * Your Kalman Filter algorithm first predicts then updates.
 * Upon receiving a measurement after the first, the algorithm should predict object position to the current timestep and then update the prediction using the new measurement.
