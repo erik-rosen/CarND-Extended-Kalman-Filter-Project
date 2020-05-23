@@ -29,7 +29,7 @@ Running the simulations with the ekf yields the following RMSE values:
 
 ### Algorithm implementation
 
-Upon receiving a measurement, we first check whether the EFK has been initialized. If not, we set the initial state estimate to be equal to the first measurement and the covariance is initialized to be large. 
+Upon receiving a measurement FusionEKF.ProcessMeasurement()` is called. We first check whether the EFK has been initialized. If not, we set the initial state estimate to be equal to the first measurement and the covariance is initialized to be large. 
 
 If the first measurement is a radar measurement, we need to convert from polar coordinates to cartesian coordinates: 
 
@@ -46,7 +46,7 @@ First we compute the time difference since the last measurement was received. Th
 
 Where sigma_ay^2 and sigma_ax^2 is the variance of the acceleration, modelled as gaussian noise with zero mean.
 
-We then apply the prediction equations to update the state estimate and state covariance matrix:
+Using `ekf_.Predict()` we apply the prediction equations to update the state estimate and state covariance matrix:
 
 ![predict](predict.png "Prediction equation")
 
