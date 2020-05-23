@@ -1,7 +1,8 @@
 # Extended Kalman Filter Project
 
-![GIF of simulated run](ekf-simulator-run.gif "Simulated EKF using Laser and Radar")
-
+| ![GIF of simulated run](ekf-simulator-run.gif "Simulated EKF using Laser and Radar") |
+|:--:| 
+| *Simulation of LIDAR (red) and RADAR (blue) measurements along with the EKF posterior mean (green)* |
 
 This project is part of the Self-Driving Car Engineer Nanodegree Program
 
@@ -11,9 +12,24 @@ I was successful in obtaining RMSE values that are lower than 0.1 along the cart
 
 ### Accuracy
 
-TODO
+Running the simulations with the ekf yields the following RMSE values
+
+**Dataset 1:**
+* X: 0.0973
+* Y: 0.0855
+* Vx: 0.4513
+* Vy: 0.4399
+
+**Dataset 2:**
+* X: 0.0740
+* Y: 0.0963
+* Vx: 0.4463
+* Vy: 0.4752
+
 
 ### Algorithm implementation
+
+The algorithm
 
 * Your Sensor Fusion algorithm follows the general processing flow as taught in the preceding lessons.
 * Your Kalman Filter algorithm handles the first measurements appropriately.
