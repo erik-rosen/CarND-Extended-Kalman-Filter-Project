@@ -29,13 +29,13 @@ Running the simulations with the ekf yields the following RMSE values:
 
 ### Algorithm implementation
 
-Upon receiving a measurement `FusionEKF.ProcessMeasurement()` is called. We first check whether the EFK has been initialized. If not, we set the initial state estimate to be equal to the first measurement and the covariance is initialized to be large. 
+Upon receiving a measurement FusionEKF.ProcessMeasurement()` is called. We first check whether the EFK has been initialized. If not, we set the initial state estimate to be equal to the first measurement and the covariance is initialized to be large. 
 
 If the first measurement is a radar measurement, we need to convert from polar coordinates to cartesian coordinates: 
 
 ![polar-to-cartesian](polar-to-cartesian.png "Equation to convert polar coordinated to cartesian")
 
-Once the EKF has been initialized measurements received trigger the following loop: 
+Once the EKF has been initialized measurements received trigger the following sequence: 
 
 #### Prediction:
 First we compute the time difference since the last measurement was received. This is used to compute the state transition matrix F, and the process covariance matrix Q:
