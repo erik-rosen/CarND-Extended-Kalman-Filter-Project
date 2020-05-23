@@ -6,13 +6,13 @@
 
 This project is part of the Self-Driving Car Engineer Nanodegree Program
 
-In this project I built an extended Kalman filter to estimate the state of a moving object of interest with noisy lidar and radar measurements. 
+In this project I built an extended Kalman filter to estimate the state of a moving object of interest with noisy LIDAR and RADAR measurements. 
 
 I was successful in obtaining RMSE values that are lower than 0.1 along the cartesian axes position measurements, and less that 0.5 in velocity components along axes. 
 
 ### Accuracy
 
-Running the simulations with the ekf yields the following RMSE values
+Running the simulations with the ekf yields the following RMSE values:
 
 **Dataset 1:**
 * X: 0.0973
@@ -29,7 +29,19 @@ Running the simulations with the ekf yields the following RMSE values
 
 ### Algorithm implementation
 
-The algorithm
+Upon receiving a measurement, we first check whether the EFK has been initialized. If not, we set the initial state estimate to be equal to the first measurement and the covariance is initialized to be large. 
+
+If the first measurement is a radar measurement, we need to convert from polar coordinates to cartesian coordinates: 
+
+![polar-to-cartesian](polar-to-cartesian.png "Equation to convert polar coordinated to cartesian")
+
+Once the EKF has been initialized measurements received trigger the following loop: 
+
+##### Prediction:
+1. First we compute the time difference since the last measurement was received. This is used to compute the state transition matrix F, and the process covariance matrix Q.
+2. We apply the EKF prediction equations to update the state estimate and state covariance matrix:
+
+
 
 * Your Sensor Fusion algorithm follows the general processing flow as taught in the preceding lessons.
 * Your Kalman Filter algorithm handles the first measurements appropriately.
