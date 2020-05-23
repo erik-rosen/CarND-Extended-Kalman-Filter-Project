@@ -29,7 +29,7 @@ Running the simulations with the ekf yields the following RMSE values:
 
 ### Algorithm implementation
 
-Upon receiving a measurement FusionEKF.ProcessMeasurement()` is called. We first check whether the EFK has been initialized. If not, we set the initial state estimate to be equal to the first measurement and the covariance is initialized to be large. 
+Upon receiving a measurement `FusionEKF.ProcessMeasurement()` is called. We first check whether the EFK has been initialized. If not, we set the initial state estimate to be equal to the first measurement and the covariance is initialized to be large. 
 
 If the first measurement is a radar measurement, we need to convert from polar coordinates to cartesian coordinates: 
 
@@ -50,22 +50,33 @@ Using `ekf_.Predict()` we apply the prediction equations to update the state est
 
 ![predict](predict.png "Prediction equation")
 
-* Your Sensor Fusion algorithm follows the general processing flow as taught in the preceding lessons.
-* Your algorithm should use the first measurements to initialize the state vectors and covariance matrices.
-* Your Kalman Filter algorithm first predicts then updates.
-* Upon receiving a measurement after the first, the algorithm should predict object position to the current timestep and then update the prediction using the new measurement.
-* Your Kalman Filter can handle radar and lidar measurements.
+#### Update LIDAR:
+Following the prediction step we run the update step to compute the posterior state estimate x and covariance matrix P. If the measurement received was a LIDAR measurement we simply use the plain Kalman Filter update equation to compute the posterior mean and covariance using `ekf_.update()`:
 
-### Code Efficiency
+![update](update-kf.png "Update equation")
 
-### Misc
+Where z is the measurement received, H defines the mapping from the state space to the measurement space for the LIDAR sensor (stored as `H_` and initialized in the `FusionEKF` constructor), R is the measurement covariance matrix of the LIDAR sensor (LIDAR measurement noise is modelled as a multivariate Gausian with zero mean). R is stored as `R_laser_` and initialized in the `FusionEKF` constructor.
 
-TODO:
-1. While we're giving this project to you with starter code, you are not actually required to use it! If you think you can organize your Kalman Filter better than us, go for it! Also, this project was templatized in an object-oriented style, however it's reasonable to build a Kalman Filter in a functional style. Feel free to start from scratch with a functional algorithm!
-2. Keep in mind that your code must compile. If your changes necessitate modifying CMakeLists.txt, you are responsible for ensuring that any reviewer can still compile your code given the dependencies listed earlier in the instructions - platform specific errors will not be debugged by graders.
-3. There is some room for improvement with the Kalman Filter algorithm. Maybe some aspects of the algorithm could be combined? Maybe some could be skipped under certain circumstances? Maybe there are other ways to improve performance? Get creative!
-4. Analyze what happens when you turn off radar or lidar. Which sensor type provides more accurate readings? How does fusing the two sensors' data improve the tracking results?
+![H_laser](h_laser.png "H_laser")
+![R_laser](R_laser.png "R_laser")
 
+#### Update RADAR:
+
+If the measurement is a RADAR measurement, we will need apply the EKF equations in the update step, as the measurement is given in polar coordinates rather than cartesian coordinates, and the transformation between the two spaces is a non-linear function. The EKF update equations used are mostly the same as above, but we replace `y = z - Hx'` with `y = z -h(x')`, where h(x) is defined as:
+
+![h(x)](h(x).png "State space to measurement space function for radar")
+
+We also replace `H` in the KF equations with `Hj`, the Jacobian. `Hj` is the linear approximation of the mapping from the state space to the measurement space for RADAR measurements. We compute the jacobian `Hj_` for the RADAR measurement using `tools.CalculateJacobian(ekf_.x_)`:
+
+![Hj](Hj.png "Jacobian for RADAR measurements (linear approximation of the mapping between state space and measurement space")
+ 
+Since several elements in the Hj matrix have a denominator which can be 0 or close to zero, we need to ensure that our algorithm can handle those situations. We do this by checking whether px^2 + px^2 is small, and in those cases we simply use the jacobian that was used in the last update. 
+
+Once the Jacobian has been computed, we update the state estimate `x_` and covariance `P_` using `ekf_.updateEKF()` letting `R_radar` be:
+
+![R_radar](R_radar.png "R_radar")
+
+---
 ## Running the simulator
 
 This project involves the Term 2 Simulator which can be downloaded [here](https://github.com/udacity/self-driving-car-sim/releases).
