@@ -29,7 +29,7 @@ Running the simulations with the ekf yields the following RMSE values:
 
 ### Algorithm implementation
 
-Upon receiving a measurement FusionEKF.ProcessMeasurement()` is called. We first check whether the EFK has been initialized. If not, we set the initial state estimate to be equal to the first measurement and the covariance is initialized to be large. 
+Upon receiving a measurement `FusionEKF.ProcessMeasurement()` is called. We first check whether the EFK has been initialized. If not, we set the initial state estimate to be equal to the first measurement and the covariance is initialized to be large. 
 
 If the first measurement is a radar measurement, we need to convert from polar coordinates to cartesian coordinates: 
 
